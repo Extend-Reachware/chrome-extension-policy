@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — reachware Sale ID Note Sync</title>
+    <style>
+      :root {
+        --text: #1a1a1a;
+        --muted: #555;
+        --rule: #e2e2e2;
+        --bg: #ffffff;
+        --code-bg: #f4f4f4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text: #e8e8e8;
+          --muted: #a8a8a8;
+          --rule: #3a3a3a;
+          --bg: #161616;
+          --code-bg: #262626;
+        }
+      }
+      body {
+        font: 16px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+      }
+      h1 { font-size: 26px; margin-bottom: 4px; }
+      h2 { font-size: 19px; margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--rule); }
+      .updated { color: var(--muted); margin-top: 0; }
+      code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 14px; }
+      table { border-collapse: collapse; width: 100%; font-size: 15px; }
+      th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+      th { font-weight: 600; }
+      .table-wrap { overflow-x: auto; }
+    </style>
+  </head>
+  <body>
+    <h1>Privacy Policy</h1>
+    <p class="updated">reachware — Sale ID Note Sync browser extension · Last updated: October 7, 2026</p>
+
+    <p>
+      This policy describes what data the <strong>reachware G — Sale ID Note Sync</strong> browser extension
+      (the "Extension"), published by Reachware, collects, where it stores that data, and where it sends it.
+      The Extension is a business integration tool for golf-course staff who use Chronogolf / Lightspeed Golf
+      (LightSpeed G) together with Lightspeed Retail (LightSpeed R).
+    </p>
+
+    <h2>Purpose</h2>
+    <p>
+      When staff complete a sale for a tee-time reservation, the Extension associates the completed
+      Lightspeed sale with the reservation it pays for, and sends that link (the Sale ID and the reservation's
+      booking reference) to the Reachware backend so the integration can record which sale belongs to which
+      reservation. It also reports whether the sale-link webhook succeeded or failed, along with the time of
+      that report. The Extension collects data only for these integration purposes.
+    </p>
+
+    <h2>Where the Extension is active</h2>
+    <p>
+      The Extension runs only on pages under <code>chronogolf.ca</code> and <code>chronogolf.com</code>. On those
+      pages it looks at exactly three Chronogolf/Lightspeed API calls made by the page itself:
+    </p>
+    <ul>
+      <li>creating a reservation (<code>POST /private_api/reservations</code>) — the response is read;</li>
+      <li>starting a tee-sheet checkout (<code>POST /private_api/clubs/&lt;club&gt;/teesheet_checkout</code>) — the request is read;</li>
+      <li>the sale-completed notification (<code>POST /private_api/cb/lightspeed_sale_completed</code>) — the request is read.</li>
+    </ul>
+    <p>
+      All other network traffic and page content is ignored. The Extension does not run on any other website and
+      does not record browsing history.
+    </p>
+
+    <h2>Data collected</h2>
+    <p>From the three API calls above, the Extension collects only the following operational identifiers:</p>
+    <ul>
+      <li><strong>Booking Reference</strong> of a newly created reservation;</li>
+      <li><strong>Club ID</strong> of the golf club the reservation or sale belongs to;</li>
+      <li><strong>Round IDs</strong> — the identifiers of the tee-time rounds in a reservation and in a checkout;</li>
+      <li><strong>Sale ID</strong> of a completed Lightspeed sale.</li>
+    </ul>
+    <p>To match a sale to the right reservation, the Extension also records, locally only:</p>
+    <ul>
+      <li>the browser's internal numeric ID of the tab in which the reservation, checkout or sale occurred; and</li>
+      <li>the time each item was captured.</li>
+    </ul>
+    <p>
+      The Extension does <strong>not</strong> collect customer names, email addresses, phone numbers, reservation
+      notes, prices, payment-card details, or any other content of those API calls. It does not read or store
+      your Chronogolf or Lightspeed login credentials, cookies, or authentication tokens.
+    </p>
+
+    <h2>Local storage</h2>
+    <p>
+      The Extension uses the browser's local extension storage (<code>chrome.storage.local</code>) on your
+      computer for the short-lived data it needs to match a sale to a reservation. This storage stays on your
+      device. The Extension does not sync it to your browser account, and it is not cloud storage.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>What is stored</th><th>Contents</th><th>When it is removed</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pending reservations</td>
+            <td>Booking Reference, Club ID, Round IDs, tab ID, capture time</td>
+            <td>When matched to a sale. Unmatched entries expire after 24 hours and are deleted the next time a reservation is captured.</td>
+          </tr>
+          <tr>
+            <td>Pending checkout (one per tab)</td>
+            <td>Club ID, Round IDs, tab ID, capture time</td>
+            <td>When matched to a sale or replaced by a newer checkout in the same tab. Entries older than 24 hours are deleted the next time a checkout is captured.</td>
+          </tr>
+          <tr>
+            <td>Recently processed sales</td>
+            <td>Club ID and Sale ID, with the time processed (used to ignore duplicate notifications for the same sale)</td>
+            <td>At most 200 are kept. Entries older than 24 hours are deleted the next time a sale is matched.</td>
+          </tr>
+          <tr>
+            <td>Failed deliveries</td>
+            <td>Booking Reference, Sale ID and Club ID of a sale link that could not be delivered to Reachware after three attempts, with the failure time, retry count and last error message</td>
+            <td>When the link is delivered successfully, either automatically after the next successfully delivered sale or when staff press "retry now" in the popup. At most 100 are kept; if more fail, the oldest is discarded.</td>
+          </tr>
+          <tr>
+            <td>Activity log</td>
+            <td>Status messages that may include the identifiers above, shown in the Extension's popup for troubleshooting</td>
+            <td>Only the 200 most recent entries are kept. Staff can clear the log at any time with the "clear" button in the popup.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>All of the Extension's local storage is deleted by the browser when the Extension is uninstalled.</p>
+
+    <h2>Data transmission</h2>
+    <p>
+      When the Extension has matched a completed sale to a reservation, it sends one HTTPS request to the
+      Reachware backend at <code>https://app.reachware.com/</code> containing exactly three values:
+    </p>
+    <ul>
+      <li>Booking Reference</li>
+      <li>Sale ID</li>
+      <li>Club ID</li>
+    </ul>
+    <p>
+      After the sale-link request reaches a final outcome, a separate HTTPS request to the Reachware status
+      webhook contains the Club ID, Booking Reference, Sale ID, whether the sale-link request failed, and the
+      status-report time. `Has_Error` is false when the sale-link request succeeds and true when it fails.
+      If the sale-link request still fails after three attempts, the same three identifiers are kept in local
+      storage (see "Failed deliveries" above) and sent again later. Round IDs, tab IDs and the activity log are
+      never transmitted. If a sale cannot be matched with certainty, nothing is sent. As with any web request, Reachware's server also receives standard connection
+      information such as your IP address and browser user-agent.
+    </p>
+    <p>The Extension sends data only to the Reachware backend.</p>
+
+    <h2>Data sharing</h2>
+    <ul>
+      <li>
+        Collected data is transmitted <strong>only</strong> to the Reachware backend, and only to provide the
+        Extension's integration functionality.
+      </li>
+      <li>Data is <strong>not sold</strong>, and it is <strong>not shared with advertisers or third-party advertising networks</strong>.</li>
+      <li>The Extension contains no advertising, analytics, or tracking code.</li>
+    </ul>
+    <p>
+      The use of information received by this Extension complies with the
+      <a href="https://developer.chrome.com/docs/webstore/program-policies/user-data-faq">Chrome Web Store User Data Policy</a>,
+      including the Limited Use requirements.
+    </p>
+
+    <h2>Security</h2>
+    <p>
+      Data sent to Reachware is transmitted over HTTPS. Messages passed between the Extension's own components
+      are checked before use, and only the fields listed above are stored or forwarded. Data held in local
+      browser storage is protected by your browser and operating-system account. The Extension does not add
+      its own encryption to it.
+    </p>
+
+    <h2>Your choices</h2>
+    <ul>
+      <li>Clear the activity log at any time from the Extension popup.</li>
+      <li>Resend failed deliveries at any time with the "retry now" button in the Extension popup.</li>
+      <li>Uninstall the Extension to stop all collection and delete everything it has stored locally.</li>
+      <li>
+        For questions about data already received by the Reachware backend, including access or deletion
+        requests, contact us at the address below.
+      </li>
+    </ul>
+
+    <h2>Changes to this policy</h2>
+    <p>
+      If the Extension's data practices change, this policy will be updated and the "Last updated" date above
+      will change.
+    </p>
+
+    <h2>Contact</h2>
+    <p>Reachware — <a href="mailto:extend@reachware.com">Contact Us</a></p>
+  </body>
+</html>
